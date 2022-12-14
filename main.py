@@ -10,9 +10,9 @@ level = Level(level_map,screen)
 
 while True:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT:   
             pygame.quit()
-            sys.exit()
+            sys.exit() 
 
     screen.fill((25,25,25)) 
     level.run()

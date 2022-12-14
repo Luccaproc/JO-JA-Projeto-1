@@ -1,6 +1,6 @@
 import pygame
 from tiles import Tile
-from settings import tile_size
+from settings import *
 from player import Player
 
 class Level():
@@ -8,7 +8,8 @@ class Level():
         self.display_surface = surface
         self.setup_level(level_index)
 
-        self.world_shift = 0
+        self.world_shiftx = 0
+        #self.world_shifty = 0
 
     def setup_level(self, layout):
         self.tiles = pygame.sprite.Group()
@@ -25,13 +26,72 @@ class Level():
                     player_sprite = Player((x,y))
                     self.player.add(player_sprite)
 
-            
+    def scroll_x(self):
+        player = self.player.sprite
+        player_x = player.rect.centerx
+        direction_x = player.direction.x
+
+        if player_x < limit_left and direction_x < 0:
+            self.world_shiftx = 5
+            player.speed = 0
+        elif player_x > limit_right and direction_x > 0:
+            self.world_shiftx = -5
+            player.speed = 0
+        else:
+            self.world_shiftx = 0
+            player.speed = 5
+
+    def x_movement_collision(self):
+        player = self.player.sprite
+        player.rect.x += player.direction.x * player.speed
+
+        for sprite in self.tiles.sprites():
+            if sprite.rect.colliderect(player.rect):
+                if player.direction.x < 0:
+                    player.rect.left = sprite.rect.right
+                elif player.direction.x > 0:
+                    player.rect.right = sprite.rect.left
+
+    def y_movement_collision(self):
+        player = self.player.sprite
+        keys = pygame.key.get_pressed()
+        player.apply_gravity()
+
+        for sprite in self.tiles.sprites():
+            if sprite.rect.colliderect(player.rect):
+                if player.direction.y > 0:
+                    player.rect.bottom = sprite.rect.top
+                    player.direction.y = 0
+                    if keys[pygame.K_SPACE]:
+                        player.jump()
+                elif player.direction.y < 0:
+                    player.rect.top = sprite.rect.bottom
+                    player.direction.y = 0
+                
+
+    '''
+    def scroll_y(self):
+        player = self.player.sprite
+        player_y = player.rect.centery
+        direction_y = player.direction.y
+
+        if player_y < limit_up and direction_y < 0:
+            self.world_shifty = 5
+        else:
+            self.world_shifty = 0
+            player.speed = 5
+    '''
 
     def run(self):
         #Level tiles
-        self.tiles.update(self.world_shift)
+        self.tiles.update(self.world_shiftx)
+        #self.tiles.update(self.world_shifty)
         self.tiles.draw(self.display_surface)
+        self.scroll_x()
 
         #Player
         self.player.update()
         self.player.draw(self.display_surface)
+        self.x_movement_collision()
+        self.y_movement_collision()
+        #self.scroll_y()
