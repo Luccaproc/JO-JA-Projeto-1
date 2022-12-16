@@ -74,7 +74,6 @@ class Level():
         player = self.player.sprite
         player_y = player.rect.centery
         direction_y = player.direction.y
-
         if player_y < limit_up and direction_y < 0:
             self.world_shifty = 5
         else:

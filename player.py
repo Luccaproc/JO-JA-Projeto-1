@@ -14,6 +14,10 @@ class Player(pygame.sprite.Sprite):
         self.gravity = 0.5
         self.jump_height = -14
 
+    def import_character_assets(self):
+        character_path = '/Midias/Sprites/'
+        self.animations = {'idle':[],'run':[],'jump':[],'fall':[]}
+
     def get_input(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
@@ -22,6 +26,7 @@ class Player(pygame.sprite.Sprite):
             self.direction.x = -1
         else:
             self.direction.x = 0
+
 
     def apply_gravity(self):
         self.direction.y += self.gravity
